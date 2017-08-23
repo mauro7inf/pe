@@ -1,0 +1,128 @@
+let primes = [];
+let primeLimit = 1;
+let primeLimitMultiplier = 2;
+
+// returns a list of primes up to n
+function getPrimesUpTo(n) {
+  console.log('generating primes up to ' + n);
+  // naive way
+  primes = [];
+  let sieve = [];
+  for (let i = 0; i <= n; i++) {
+    sieve[i] = false;
+  }
+  for (let currentPrime = 2; currentPrime <= n; currentPrime++) {
+    if (sieve[currentPrime]) {
+      continue;
+    }
+    primes.push(currentPrime);
+    for (let j = currentPrime*currentPrime; j <= n; j += currentPrime) {
+      sieve[j] = true;
+    }
+  }
+  primeLimit = n;
+  return primes;
+}
+
+// returns the nth prime, where prime 1 is 2
+function nthPrime(n) {
+  while (primes.length < n) {
+    getPrimesUpTo(primeLimit*primeLimitMultiplier);
+  }
+  return primes[n - 1];
+}
+
+// object where the keys are primes and the values are exponents
+function factor(n) {
+  let factors = {};
+  let currentPrimeIndex = 1;
+  let r = n; // reduced n
+  let currentPrime = nthPrime(currentPrimeIndex);
+  while (currentPrime*currentPrime <= r) {
+    if (r % currentPrime === 0) {
+      if (currentPrime in factors) {
+        factors[currentPrime]++;
+      } else {
+        factors[currentPrime] = 1;
+      }
+      r /= currentPrime;
+    } else {
+      currentPrimeIndex++;
+      currentPrime = nthPrime(currentPrimeIndex);
+    }
+  }
+  if (r > 1) {
+    if (r in factors) {
+      factors[r]++;
+    } else {
+      factors[r] = 1;
+    }
+  }
+  return factors;
+}
+
+// array of prime factors
+// a can be either a number or an object of factors
+function primeFactors(a) {
+  let factors = null;
+  if (typeof a === 'number' || typeof a === 'string') {
+    factors = factor(+a);
+  } else if (typeof a === 'object') {
+    factors = a;
+  }
+  return Object.keys(factors).map(n => +n);
+}
+
+// array of arrays with factor pairs
+function factorPairs(n) {
+  let factors = factor(n);
+  let pFactors = primeFactors(factors);
+  let pairs = [];
+  let nPrimes = pFactors.length;
+  let currentFactor = [];
+  for (let i = 0; i < nPrimes; i++) {
+    currentFactor[i] = 0;
+  }
+
+  function computeCurrentFactor() {
+    let f = 1;
+    for (let i = 0; i < nPrimes; i++) {
+      for (let j = 0; j < factors[currentFactor[i]]; j++) {
+        f *= pFactors[i];
+      }
+    }
+    return f;
+  }
+
+  function incrementCurrentFactor() {
+    let c = 0;
+    while (c < nPrimes) {
+      console.log(currentFactor);
+      currentFactor[c]++;
+      let f = computeCurrentFactor();
+      if (currentFactor[c] > factors[pFactors[c]] || f > n/f) {
+        currentFactor[c] = 0;
+        c++;
+      } else {
+        return;
+      }
+    }
+    currentFactor = null;
+  }
+
+  while (currentFactor) {
+    let f = computeCurrentFactor();
+    pairs.push([f, n/f]);
+    incrementCurrentFactor();
+  }
+
+  return pairs;
+}
+
+module.exports = {
+  getPrimesUpTo: getPrimesUpTo,
+  nthPrime: nthPrime,
+  factor: factor,
+  primeFactors: primeFactors,
+  factorPairs: factorPairs
+};
