@@ -61,6 +61,23 @@ function factor(n) {
   return factors;
 }
 
+// factor a product of array of numbers
+function factorProduct(a) {
+  let factors = factor(a[0]);
+  for (let i = 1; i < a.length; i++) {
+    let newFactors = factor(a[i]);
+    let pFactors = primeFactors(newFactors);
+    for (let j = 0; j < pFactors.length; j++) {
+      if (pFactors[j] in factors) {
+        factors[pFactors[j]] += newFactors[pFactors[j]];
+      } else {
+        factors[pFactors[j]] = newFactors[pFactors[j]];
+      }
+    }
+  }
+  return factors;
+}
+
 // array of prime factors
 // a can be either a number or an object of factors
 function primeFactors(a) {
@@ -73,9 +90,16 @@ function primeFactors(a) {
   return Object.keys(factors).map(n => +n);
 }
 
-// array of arrays with factor pairs
-function factorPairs(n) {
-  let factors = factor(n);
+// array of arrays with factor pairs; accepts a factored number or a number
+function factorPairs(a) {
+  let factors = null;
+  if (typeof a === 'number' || typeof a === 'string') {
+    factors = factor(+a);
+    n = +a;
+  } else if (typeof a === 'object') {
+    factors = a;
+    n = multiplyFactors(a);
+  }
   let pFactors = primeFactors(factors);
   let pairs = [];
   let nPrimes = pFactors.length;
@@ -87,8 +111,9 @@ function factorPairs(n) {
   function computeCurrentFactor() {
     let f = 1;
     for (let i = 0; i < nPrimes; i++) {
-      for (let j = 0; j < factors[currentFactor[i]]; j++) {
-        f *= pFactors[i];
+      let p = pFactors[i];
+      for (let j = 0; j < currentFactor[i]; j++) {
+        f = f*p;
       }
     }
     return f;
@@ -97,7 +122,6 @@ function factorPairs(n) {
   function incrementCurrentFactor() {
     let c = 0;
     while (c < nPrimes) {
-      console.log(currentFactor);
       currentFactor[c]++;
       let f = computeCurrentFactor();
       if (currentFactor[c] > factors[pFactors[c]] || f > n/f) {
@@ -119,10 +143,23 @@ function factorPairs(n) {
   return pairs;
 }
 
+// multiply factors back together
+function multiplyFactors(a) {
+  let pFactors = primeFactors(a);
+  let total = 1;
+  for (let i = 0; i < pFactors.length; i++) {
+    for (let j = 0; j < a[pFactors[i]]; j++) {
+      total *= pFactors[i];
+    }
+  }
+  return total;
+}
+
 module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
   factor: factor,
+  factorProduct: factorProduct,
   primeFactors: primeFactors,
   factorPairs: factorPairs
 };
