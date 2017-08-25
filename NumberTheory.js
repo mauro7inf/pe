@@ -33,7 +33,13 @@ function nthPrime(n) {
 }
 
 // object where the keys are primes and the values are exponents
-function factor(n) {
+function factor(a) {
+  let n;
+  if (typeof a === 'object') {
+    return a;
+  } else {
+    n = +a;
+  }
   let factors = {};
   let currentPrimeIndex = 1;
   let r = n; // reduced n
@@ -155,11 +161,32 @@ function multiplyFactors(a) {
   return total;
 }
 
+// boolean if a (number or factored number) can be written
+// as sum of two positive squares
+function canBeSumOfTwoSquares(a) {
+  let factors = factor(a);
+  let pFactors = primeFactors(factors);
+  let oddTwos = false;
+  let pythagoreanPrimes = false;
+  for (let i = 0; i < pFactors.length; i++) {
+    let pType = pFactors[i] % 4;
+    if (pType === 3 && factors[pFactors[i]] % 2 === 1) {
+      return false;
+    } else if (pType === 2 && factors[pFactors[i]] % 2 === 1) {
+      oddTwos = true;
+    } else if (pType === 1) {
+      pythagoreanPrimes = true;
+    }
+  }
+  return oddTwos || pythagoreanPrimes;
+}
+
 module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
   factor: factor,
   factorProduct: factorProduct,
   primeFactors: primeFactors,
-  factorPairs: factorPairs
+  factorPairs: factorPairs,
+  canBeSumOfTwoSquares: canBeSumOfTwoSquares
 };
