@@ -181,6 +181,19 @@ function canBeSumOfTwoSquares(a) {
   return oddTwos || pythagoreanPrimes;
 }
 
+// gcd by Euclidean algorithm
+function gcd(a, b) {
+  let ar = a;
+  let br = b;
+  let r = ar % br;
+  while (r !== 0) {
+    ar = br;
+    br = r;
+    r = ar % br;
+  }
+  return br;
+}
+
 module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
@@ -188,5 +201,6 @@ module.exports = {
   factorProduct: factorProduct,
   primeFactors: primeFactors,
   factorPairs: factorPairs,
-  canBeSumOfTwoSquares: canBeSumOfTwoSquares
+  canBeSumOfTwoSquares: canBeSumOfTwoSquares,
+  gcd: gcd
 };
