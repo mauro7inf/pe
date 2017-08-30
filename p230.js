@@ -1,3 +1,5 @@
+let LargeInteger = require('./LargeInteger');
+
 let N = process.argv[2];
 
 let debugOn = false; // set to true to enable debug
@@ -13,10 +15,14 @@ const A = "141592653589793238462643383279502884197169399375105820974944592307816
 const B = "8214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196";
 
 function nthStep(n) {
-	return (127 + 19*n)*Math.pow(7, n);
+  let pow = (new LargeInteger(7)).exponent(n);
+  let coeff = (new LargeInteger(127)).add((new LargeInteger(19)).multiply(new LargeInteger(n)));
+  return pow.multiply(coeff);
 }
 
 let dMax = nthStep(N);
+
+console.log(dMax.toString());
 
 let fib = [0, 1, 1];
 
@@ -58,10 +64,10 @@ function getLetterFromTerm(z, t) {
 		return getLetterFromTerm(z, t - 2);
 	}
 }
-
+/*
 let string = '';
 for (let i = 0; i <= N; i++) {
 	string = '' + D(i) + string;
 }
 
-console.log(string);
+console.log(string);*/
