@@ -84,10 +84,10 @@ LargeInteger.prototype.add = function (a) {
   for (let d = 0; d < this.number.length || d < a.number.length; d++) {
     let result = carry;
     if (d < this.number.length) {
-      result += this.number.charAt(this.number.length - d - 1);
+      result += +this.number.charAt(this.number.length - d - 1);
     }
     if (d < a.number.length) {
-      result += a.number.charAt(a.number.length - d - 1);
+      result += +a.number.charAt(a.number.length - d - 1);
     }
     if (result >= 10) {
       carry = 1;
@@ -96,6 +96,7 @@ LargeInteger.prototype.add = function (a) {
     }
     digits.push('' + (result % 10));
   }
+  digits.push(carry);
   let string = '';
   for (let d = 0; d < digits.length; d++) {
     string = '' + digits[d] + string;
@@ -121,9 +122,9 @@ LargeInteger.prototype.subtract = function (a) {
   let borrow = 0;
   let digits = [];
   for (let d = 0; d < this.number.length; d++) {
-    let result = this.number.charAt(this.number.length - d - 1) - borrow;
+    let result = +this.number.charAt(this.number.length - d - 1) - borrow;
     if (d < a.number.length) {
-      result -= a.number.charAt(a.number.length - d - 1);
+      result -= +a.number.charAt(a.number.length - d - 1);
     }
     if (result < 0) {
       borrow = 1;
@@ -151,11 +152,12 @@ function multiplyStrings(a, b) {
     let carry = 0;
     let digits = [];
     for (let j = 0; j < a.length; j++) {
-      let result = carry + b.charAt(b.length - i - 1)*a.charAt(a.length - j - 1);
+      let result = carry + (+b.charAt(b.length - i - 1))*(+a.charAt(a.length - j - 1));
       let digit = result % 10;
       carry = (result - digit)/10;
       digits.push(digit);
     }
+    digits.push(carry);
     let string = '';
     for (let d = 0; d < digits.length; d++) {
       string = '' + digits[d] + string;
@@ -191,15 +193,73 @@ LargeInteger.prototype.multiply = function (a) {
   }
 };
 
+// returns object with quotient and remainder
+// signs for quotient and remainder are the same
+LargeInteger.prototype.divide = function (a) {
+  if (!(a instanceof LargeInteger)) {
+    return this.divide(new LargeInteger(a));
+  }
+  if (a.equals(new LargeInteger(0))) {
+    return null; // I guess?
+  }
+  if (this.sign === -1 && a.sign === -1) {
+    return this.flipSign().divide(a.flipSign());
+  } else if (this.sign === -1) {
+    let answer = this.flipSign().divide(a);
+    answer.quotient = answer.quotient.flipSign();
+    answer.remainder = answer.remainder.flipSign();
+    return answer;
+  } else if (a.sign === -1) {
+    let answer = this.divide(a.flipSign());
+    answer.quotient = answer.quotient.flipSign();
+    answer.remainder = answer.remainder.flipSign();
+    return answer;
+  }
+  if (this.lessThan(a)) {
+    return {
+      quotient: new LargeInteger(0),
+      remainder: this
+    };
+  }
+  let multiples = [new LargeInteger(0)];
+  for (let i = 1; i <= 9; i++) {
+    multiples.push(multiples[multiples.length - 1].add(a));
+  }
+  let digits = [];
+  let current = new LargeInteger(0);
+  for (let d = 0; d < this.number.length; d++) {
+    let acc = new LargeInteger(current.toString() + '' + this.number.charAt(d));
+    let digit = 9;
+    while (acc.lessThan(multiples[digit])) {
+      digit--;
+    }
+    digits.push(digit);
+    current = acc.subtract(multiples[digit]);
+  }
+  let quotient = new LargeInteger(digits.join(''));
+  return {
+    quotient: quotient,
+    remainder: current
+  };
+};
+
+LargeInteger.prototype.quotient = function (a) {
+  return this.divide(a).quotient;
+};
+
+LargeInteger.prototype.mod = function (a) {
+  return this.divide(a).remainder;
+}
+
 // a is a regular integer, not a LargeInteger
 LargeInteger.prototype.exponent = function (a) {
-  if (a === 1) {
+  if (a === 0) {
     return new LargeInteger(1);
   }
   let powers = [
     {exponent: 1, power: this.copy()}
   ];
-  while (2*powers[powers.length - 1].exponent < a) {
+  while (2*powers[powers.length - 1].exponent <= a) {
     let currentPower = powers[powers.length - 1];
     powers.push({
       exponent: currentPower.exponent*2,
@@ -210,7 +270,7 @@ LargeInteger.prototype.exponent = function (a) {
   let p = powers.length - 1;
   let total = new LargeInteger(1);
   while (ar > 0) {
-    if (powers[p].exponent < ar) {
+    if (powers[p].exponent <= ar) {
       ar -= powers[p].exponent;
       total = total.multiply(powers[p].power);
     }
@@ -268,3 +328,5 @@ LargeInteger.prototype.lessThanOrEqualTo = function (a) {
 LargeInteger.prototype.greaterThanOrEqualTo = function (a) {
   return !(this.lessThan(a));
 };
+
+module.exports = LargeInteger;
