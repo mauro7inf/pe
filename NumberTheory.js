@@ -149,6 +149,32 @@ function factorPairs(a) {
   return pairs;
 }
 
+// unique sets of factors
+function factorSets(a) {
+  return factorSetsWithSmallestFactor(a, 1);
+}
+
+// internal function
+function factorSetsWithSmallestFactor(a, f) {
+  let sets = [];
+  let pairs = factorPairs(a);
+  for (let i = 0; i < pairs.length; i++) {
+    if (pairs[i][0] < f) {
+      continue;
+    }
+    if (pairs[i][0] === 1) {
+      sets.push([pairs[i][1]]);
+      continue;
+    }
+    sets.push(pairs[i]);
+    let remainderSets = factorSetsWithSmallestFactor(pairs[i][1], pairs[i][0]);
+    for (let j = 0; j < remainderSets.length; j++) {
+      sets.push([pairs[i][0]].concat(remainderSets[j]));
+    }
+  }
+  return sets;
+}
+
 // multiply factors back together
 function multiplyFactors(a) {
   let pFactors = primeFactors(a);
@@ -201,6 +227,7 @@ module.exports = {
   factorProduct: factorProduct,
   primeFactors: primeFactors,
   factorPairs: factorPairs,
+  factorSets: factorSets,
   canBeSumOfTwoSquares: canBeSumOfTwoSquares,
   gcd: gcd
 };
