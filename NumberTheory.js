@@ -220,6 +220,10 @@ function gcd(a, b) {
   return br;
 }
 
+function lcm(a, b) {
+  return a*b/gcd(a, b);
+}
+
 module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
@@ -229,5 +233,6 @@ module.exports = {
   factorPairs: factorPairs,
   factorSets: factorSets,
   canBeSumOfTwoSquares: canBeSumOfTwoSquares,
-  gcd: gcd
+  gcd: gcd,
+  lcm: lcm
 };
