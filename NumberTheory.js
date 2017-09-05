@@ -224,6 +224,80 @@ function lcm(a, b) {
   return a*b/gcd(a, b);
 }
 
+function totient(a) {
+  let pFactors = primeFactors(a);
+  let f;
+  if (typeof a === 'object') {
+    f = multiplyFactors(a);
+  } else {
+    f = a;
+  }
+  for (let i = 0; i < pFactors.length; i++) {
+    let p = pFactors[i];
+    f = (f/p)*(p - 1);
+  }
+  return f;
+}
+
+function carmichael(a) {
+  let factors = factor(a);
+  let pFactors = primeFactors(factors);
+  let result;
+  if (pFactors.length === 1 && pFactors[0] === 2 && factors[2] > 2) {
+    result = totient(a)/2;
+  } else if (pFactors.length === 1 || (pFactors.length === 2 && pFactors[0] === 2)) {
+    result = totient(a);
+  } else {
+    let cms = [];
+    for (let i = 0; i < pFactors.length; i++) {
+      let p = pFactors[i];
+      let pp = {};
+      pp[p] = factors[p];
+      cms.push(carmichael(pp));
+    }
+    while (cms.length > 1) {
+      reducedCms = [];
+      for (let i = 0; i < cms.length; i += 2) {
+        if (i === cms.length - 1) {
+          reducedCms.push(cms[i]);
+        } else {
+          reducedCms.push(lcm(cms[i], cms[i + 1]));
+        }
+      }
+      cms = reducedCms;
+    }
+    result = cms[0];
+  }
+  return result;
+}
+
+// takes a number
+function digitSum(a) {
+  let n = a;
+  let sum = 0;
+  while (n > 0) {
+    let d = n % 10;
+    sum += d;
+    n = (n - d)/10;
+  }
+  return sum;
+};
+
+// takes a number
+function digitCount(a) {
+  if (a === 0) {
+    return 1; // special case
+  }
+  let n = a;
+  let count = 0;
+  while (n > 0) {
+    let d = n % 10;
+    count += 1;
+    n = (n - d)/10;
+  }
+  return count;
+};
+
 module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
@@ -234,5 +308,9 @@ module.exports = {
   factorSets: factorSets,
   canBeSumOfTwoSquares: canBeSumOfTwoSquares,
   gcd: gcd,
-  lcm: lcm
+  lcm: lcm,
+  totient: totient,
+  carmichael: carmichael,
+  digitSum: digitSum,
+  digitCount: digitCount
 };

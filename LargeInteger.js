@@ -279,6 +279,42 @@ LargeInteger.prototype.exponent = function (a) {
   return total;
 };
 
+// a is a regular integer, not a LargeInteger
+LargeInteger.prototype.exponentMod = function (a, m) {
+  if (a === 0) {
+    return new LargeInteger(1);
+  }
+  let powers = [
+    {exponent: 1, power: this.copy().mod(m)}
+  ];
+  while (2*powers[powers.length - 1].exponent <= a) {
+    let currentPower = powers[powers.length - 1];
+    powers.push({
+      exponent: currentPower.exponent*2,
+      power: currentPower.power.multiply(currentPower.power).mod(m)
+    });
+  }
+  let ar = a;
+  let p = powers.length - 1;
+  let total = new LargeInteger(1);
+  while (ar > 0) {
+    if (powers[p].exponent <= ar) {
+      ar -= powers[p].exponent;
+      total = total.multiply(powers[p].power).mod(m);
+    }
+    p--;
+  }
+  return total;
+};
+
+LargeInteger.prototype.digitSum = function () {
+  let total = 0;
+  for (let i = 0; i < this.number.length; i++) {
+    total += +this.number.charAt(i);
+  }
+  return total;
+}
+
 LargeInteger.prototype.equals = function (a) {
   if (this.sign !== a.sign) {
     return false;
