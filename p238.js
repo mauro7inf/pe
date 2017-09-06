@@ -49,21 +49,24 @@ for (let i = 0; i < cmcm; i++) {
 console.log('filling in p values');
 let earliestZero = 1;
 console.log('earliest zero: ' + earliestZero);
+let sumOfValues = 0;
 for (let p = 1; earliestZero > 0; p++) {
   console.log('p = ' + p);
+  let pCount = 0;
   let difference = 0;
   if (p > 1) {
     difference = cumulativeSums[p - 2];
   }
-  for (let i = 0; i < digitCount; i++) {
+  for (let i = 0; i <= digitCount; i++) {
     let k;
     if (p - 1 + i > digitCount) {
       k = cumulativeSums[p - 1 + i - digitCount] - difference + digitSum;
     } else {
       k = cumulativeSums[p - 1 + i] - difference;
     }
-    if (ks[k] === 0) {
+    if (k <= digitSum && ks[k] === 0 && k !== 0) {
       ks[k] = p;
+      pCount++;
       if (k === earliestZero) {
         earliestZero = 0;
         for (let l = k + 1; l < ks.length && earliestZero === 0; l++) {
@@ -75,7 +78,10 @@ for (let p = 1; earliestZero > 0; p++) {
       }
     }
   }
+  console.log(pCount + ' values (sum = ' + (p*pCount) + ')');
+  sumOfValues += p*pCount;
 }
+console.log('(sum of values = ' + sumOfValues + ')')
 
 console.log('computing iteration total...');
 let iterationTotal = 0;
@@ -96,5 +102,4 @@ for (let i = 1; i <= remainder; i++) {
 
 console.log('answer:');
 let answer = quotient.multiply(iterationTotal).add(remainderTotal);
-
-console.log(answer.toString());
+console.log(quotient.toString() + '·' + (iterationTotal) + ' + ' + remainderTotal + ' = ' + answer.toString());
