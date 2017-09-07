@@ -50,7 +50,7 @@ console.log('filling in p values');
 let earliestZero = 1;
 console.log('earliest zero: ' + earliestZero);
 let sumOfValues = 0;
-for (let p = 1; earliestZero > 0; p++) {
+for (let p = 1; earliestZero > 0 && p <= digitCount; p++) {
   console.log('p = ' + p);
   let pCount = 0;
   let difference = 0;
@@ -59,7 +59,7 @@ for (let p = 1; earliestZero > 0; p++) {
   }
   for (let i = 0; i <= digitCount; i++) {
     let k;
-    if (p - 1 + i > digitCount) {
+    if (p - 1 + i >= digitCount) {
       k = cumulativeSums[p - 1 + i - digitCount] - difference + digitSum;
     } else {
       k = cumulativeSums[p - 1 + i] - difference;
@@ -81,7 +81,7 @@ for (let p = 1; earliestZero > 0; p++) {
   console.log(pCount + ' values (sum = ' + (p*pCount) + ')');
   sumOfValues += p*pCount;
 }
-console.log('(sum of values = ' + sumOfValues + ')')
+console.log('(sum of values = ' + sumOfValues + ')');
 
 console.log('computing iteration total...');
 let iterationTotal = 0;
