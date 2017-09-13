@@ -298,6 +298,29 @@ function digitCount(a) {
   return count;
 };
 
+function numberOfFactors(a) {
+  let factors = factor(a);
+  let pFactors = primeFactors(factors);
+  let total = 1;
+  for (let i = 0; i < pFactors.length; i++) {
+    total *= factors[pFactors[i]] + 1;
+  }
+  return total;
+}
+
+function sumOfFactors(a) {
+  let factors = factor(a);
+  let pFactors = primeFactors(factors);
+  let total = 1;
+  for (let i = 0; i < pFactors.length; i++) {
+    let p = pFactors[i];
+    let num = Math.pow(p, factors[p] + 1) - 1;
+    let den = p - 1;
+    total *= num/den;
+  }
+  return total;
+}
+
 module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
@@ -312,5 +335,7 @@ module.exports = {
   totient: totient,
   carmichael: carmichael,
   digitSum: digitSum,
-  digitCount: digitCount
+  digitCount: digitCount,
+  numberOfFactors: numberOfFactors,
+  sumOfFactors: sumOfFactors
 };
