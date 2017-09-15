@@ -12,6 +12,14 @@ function realizeArray(a) {
   return total;
 }
 
+function phiArray(a) {
+  let total = 1;
+  for (let i = 0; i < a.length; i++) {
+    total *= (NumberTheory.nthPrime(a[i]) - 1);
+  }
+  return total;
+}
+
 function incrementArray(a) {
   let b = a.slice();
   let t = realizeArray(b);
@@ -22,8 +30,14 @@ function incrementArray(a) {
   }
   while (b.length > 1) {
     b[b.length - 1]++;
-    if (realizeArray(b) <= N) {
-      return b;
+    let z = NumberTheory.nthPrime(b[b.length - 1]);
+    let n = realizeArray(b)/z;
+    if (n*z <= N) {
+      let f = phiArray(b)/(z - 1);
+      if (z <= 1 + f*((n - 1)/(n - f)) ||
+          n*z*NumberTheory.nthPrime(b[b.length - 1] + 1) <= N) {
+        return b;
+      }
     }
     b.pop();
   }
@@ -47,7 +61,13 @@ function printArray(a) {
 }
 
 let a = [1, 2];
+let count = 0;
 while (a) {
+  if (count === 100000) {
+    console.log(printArray(a));
+    count = 0;
+  }
+  count++;
   let t = realizeArray(a);
   let den = t - 1;
   let phi = t;
