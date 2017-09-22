@@ -38,6 +38,12 @@ function printFactors(a) {
   return msg;
 }
 
+function printBalance(b) {
+  let num = multiplyFactors(b.num);
+  let den = multiplyFactors(b.den);
+  return num.toString() + '/' + den.toString();
+}
+
 function addBalances(b1, b2) {
   let b = {
     num: {},
@@ -163,7 +169,13 @@ function checkLimits(power, limits) {
 
 console.log('Prime powers: GENERATED!');
 
-let answer = new LargeInteger(0);
+let answers = [];
+
+function printAnswers() {
+  let answerStrings = answers.map((e) => {return e.toString();});
+  let msg = answerStrings.join(', ');
+  return 'So far: ' + msg;
+}
 
 for (let i = 0; i < primePowers[0].powers.length; i++) {
   let power = primePowers[0].powers[i];
@@ -173,11 +185,64 @@ for (let i = 0; i < primePowers[0].powers.length; i++) {
     den: number
   };
   if (checkBalance(balance)) {
-    answer = answer.add(multiplyFactors(number));
+    answers.push(multiplyFactors(number));
     console.log(multiplyFactors(number).toString());
     continue;
   }
   let limits = {'2': power.primePower['2'] - 1};
+  let primesUsed = [2];
+  console.log(printAnswers() + '; ' + printFactors(number) + ': ' + printBalance(balance));
+  findAnswers(number, balance, limits, primesUsed);
+}
+
+function findAnswers(number, balance, limits, primesUsed) {
+  let pu = primesUsed.slice();
+  let availablePrimes = Object.keys(balance.num);
+  for (let i = 0; i < availablePrimes.length; i++) {
+    let p = +availablePrimes[i];
+    if (pu.indexOf(p) !== -1) {
+      continue;
+    }
+    pu.push(p); // we're "using" primes here even if they're being skipped over
+    let powerList = primePowers.find((e) => {
+      return e.prime === p;
+    }).powers;
+    for (let j = 0; j < powerList.length; j++) {
+      let power = powerList[j];
+      if (multiplyFactors(number).multiply(multiplyFactors(power.primePower)).greaterThan(N)) {
+        break;
+      }
+      if (!checkLimits(power, limits)) {
+        continue;
+      }
+      let newNumber = NumberTheory.factorProduct([number, power.primePower]);
+      let incomingBalance = {
+        num: power.sumOfFactors,
+        den: power.primePower
+      };
+      let newBalance = addBalances(balance, incomingBalance);
+      console.log(printAnswers() + '; ' + printFactors(newNumber) + ': ' + printBalance(newBalance));
+      if (checkBalance(newBalance)) {
+        answers.push(multiplyFactors(newNumber));
+        console.log(multiplyFactors(newNumber).toString());
+        continue;
+      }
+      let newLimits = {};
+      for (let l = 0; l < Object.keys(limits).length; l++) {
+        let lp = Object.keys(limits)[l];
+        if (lp in power.sumOfFactors) {
+          newLimits[lp] = limits[lp] - power.sumOfFactors[lp];
+        }
+      }
+      findAnswers(newNumber, newBalance, newLimits, pu);
+    }
+  }
+}
+
+let answer = new LargeInteger(0);
+
+for (let i = 0; i < answers.length; i++) {
+  answer = answer.add(answers[i]);
 }
 
 console.log('Sum: ' + answer.toString());

@@ -36,7 +36,12 @@ function nthPrime(n) {
 function factor(a) {
   let n;
   if (typeof a === 'object') {
-    return a;
+    let f = {}; // make shallow copy
+    let keys = Object.keys(a);
+    for (let i = 0; i < keys.length; i++) {
+      f[keys[i]] = a[keys[i]];
+    }
+    return f;
   } else {
     n = +a;
   }
