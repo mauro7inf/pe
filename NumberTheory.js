@@ -34,10 +34,22 @@ function nthPrime(n) {
 
 // object where the keys are primes and the values are exponents
 function factor(a) {
+  return factorHelper(a, false);
+}
+
+function isPrime(a) {
+  return factorHelper(a, true);
+}
+
+// test is boolean; if true, this function simply tests primality
+function factorHelper(a, test) {
   let n;
   if (typeof a === 'object') {
-    let f = {}; // make shallow copy
     let keys = Object.keys(a);
+    if (test) {
+      return (keys.length === 1);
+    }
+    let f = {}; // make shallow copy
     for (let i = 0; i < keys.length; i++) {
       f[keys[i]] = a[keys[i]];
     }
@@ -51,6 +63,9 @@ function factor(a) {
   let currentPrime = nthPrime(currentPrimeIndex);
   while (currentPrime*currentPrime <= r) {
     if (r % currentPrime === 0) {
+      if (test) {
+        return false;
+      }
       if (currentPrime in factors) {
         factors[currentPrime]++;
       } else {
@@ -63,11 +78,17 @@ function factor(a) {
     }
   }
   if (r > 1) {
+    if (test) {
+      return true;
+    }
     if (r in factors) {
       factors[r]++;
     } else {
       factors[r] = 1;
     }
+  }
+  if (test) {
+    return false;
   }
   return factors;
 }
@@ -330,6 +351,7 @@ module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
   factor: factor,
+  isPrime: isPrime,
   factorProduct: factorProduct,
   primeFactors: primeFactors,
   factorPairs: factorPairs,
