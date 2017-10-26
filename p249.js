@@ -7,13 +7,13 @@ let totals = {};
 
 function addValue(total, value) {
 	if (total in totals) {
-		totals[total] += value;
+		totals[total] = totals[total].add(value);
 	} else {
 		totals[total] = value;
 	}
 }
 
-addValue(0, 1);
+addValue(0, new LargeInteger(1));
 
 for (let i = 1; NumberTheory.nthPrime(i) <= N; i++) {
 	let p = NumberTheory.nthPrime(i);
@@ -39,7 +39,7 @@ let totalsKeys = Object.keys(totals);
 for (let i = 0; i < totalsKeys.length; i++) {
 	let k = totalsKeys[i];
 	if (NumberTheory.isPrime(k)) {
-		console.log(k + ': ' + totals[k]);
+		console.log(k + ': ' + totals[k].toString());
 		sum = sum.add(totals[k]);
 	}
 }
