@@ -328,6 +328,18 @@ function computeColumn(column) {
   }
 }
 
+function printColumn(column) {
+  if (column === null) {
+    return 'Ø';
+  }
+  let s = '[' + column.lowerBottom + ', ';
+  if ('lowerTop' in column) {
+    s += column.lowerTop + '], [' + column.upperBottom + ', ';
+  }
+  s += column.upperTop + ']';
+  return s;
+}
+
 let middleColumn = {};
 let last = NaN;
 for (let y = y0;; y++) {
@@ -354,19 +366,22 @@ for (let y = y0;; y--) {
   last = ca;
 }
 
+console.log('x = ' + x0 + ': ' + printColumn(middleColumn));
 total += computeColumn(middleColumn);
 let forwardColumn = middleColumn;
 let forwardX = x0;
 while (forwardColumn) {
   forwardX++;
   forwardColumn = getColumn(forwardX, forwardColumn);
+  console.log('x = ' + forwardX + ': ' + printColumn(forwardColumn));
   total += computeColumn(forwardColumn);
 }
 let backwardColumn = middleColumn;
 let backwardX = x0;
 while (backwardColumn) {
-  backwardX++;
+  backwardX--;
   backwardColumn = getColumn(backwardX, backwardColumn);
+  console.log('x = ' + backwardX + ': ' + printColumn(backwardColumn));
   total += computeColumn(backwardColumn);
 }
 
