@@ -31,17 +31,21 @@ LargeInteger.prototype.trim = function () {
   return this;
 };
 
+LargeInteger.prototype.absToString = function () {
+  return '' + this.number;
+};
+
 LargeInteger.prototype.toString = function () {
   let string = this.number;
   if (this.sign === -1) {
     string = '-' + string;
   }
   return string;
-}
+};
 
 LargeInteger.prototype.copy = function () {
   return new LargeInteger(this);
-}
+};
 
 LargeInteger.prototype.abs = function () {
   return new LargeInteger(this.number);
@@ -249,7 +253,7 @@ LargeInteger.prototype.quotient = function (a) {
 
 LargeInteger.prototype.mod = function (a) {
   return this.divide(a).remainder;
-}
+};
 
 // a is a regular integer, not a LargeInteger
 LargeInteger.prototype.exponent = function (a) {
@@ -313,7 +317,7 @@ LargeInteger.prototype.digitSum = function () {
     total += +this.number.charAt(i);
   }
   return total;
-}
+};
 
 LargeInteger.prototype.equals = function (a) {
   if (this.sign !== a.sign) {
