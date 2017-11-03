@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="output/p246output.js"></script>
+    <script type="text/javascript">
+let canvas;
+let ctx;
+const cWidth = 1000;
+const cHeight = 1000;
+const xLeft = -13000;
+const xRight = 27000;
+const yBottom = -19000;
+const yTop = 21000;
+
+window.addEventListener('load', function (e) {
+  console.log('loaded');
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  ctx.lineStyle = 'rgb(0,128,255)';
+  ctx.lineWidth = '0.1';
+  draw();
+});
+
+function draw() {
+  let xs = Object.keys(data);
+  for (let i = 0; i < xs.length; i++) {
+    let x = xs[i];
+    let column = data[x];
+    drawColumn(x, column);
+  }
+  console.log('drawn');
+}
+
+function convertX(x) {
+  return (x - xLeft)*cWidth/(xRight - xLeft);
+}
+
+function convertY(y) {
+  return (yTop - y)*cHeight/(yTop - yBottom);
+}
+
+function drawColumn(x, column) {
+  if (column === null) {
+    return;
+  }
+  let cx = convertX(x);
+  if ('upperBottom' in column) {
+    let cyUpperTop = convertY(column.upperTop);
+    let cyUpperBottom = convertY(column.upperBottom);
+    ctx.beginPath();
+    ctx.moveTo(cx, cyUpperTop);
+    ctx.lineTo(cx, cyUpperBottom);
+    ctx.stroke();
+
+    let cyLowerTop = convertY(column.lowerTop);
+    let cyLowerBottom = convertY(column.lowerBottom);
+    ctx.beginPath();
+    ctx.moveTo(cx, cyLowerTop);
+    ctx.lineTo(cx, cyLowerBottom);
+    ctx.stroke();
+  } else {
+    let cyTop = convertY(column.upperTop);
+    let cyBottom = convertY(column.lowerBottom);
+    ctx.beginPath();
+    ctx.moveTo(cx, cyTop);
+    ctx.lineTo(cx, cyBottom);
+    ctx.stroke();
+  }
+}
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+  </body>
+</html>

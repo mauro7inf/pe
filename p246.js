@@ -1,4 +1,5 @@
 let Polynomial = require('./Polynomial');
+let fs = require('fs');
 
 let Mx = +(process.argv[2]);
 let My = +(process.argv[3]);
@@ -348,7 +349,7 @@ for (let y = y0;; y++) {
     middleColumn.upperBottom = y;
   }
   if (ca >= cosCutoff && last < cosCutoff) {
-    middleColumn.upperTop = y;
+    middleColumn.upperTop = y - 1;
     break;
   }
   last = ca;
@@ -360,20 +361,23 @@ for (let y = y0;; y--) {
     middleColumn.lowerTop = y;
   }
   if (ca >= cosCutoff && last < cosCutoff) {
-    middleColumn.lowerBottom = y;
+    middleColumn.lowerBottom = y + 1;
     break;
   }
   last = ca;
 }
 
-console.log('x = ' + x0 + ': ' + printColumn(middleColumn));
+let allColumns = {};
+allColumns[x0] = middleColumn;
+//console.log('x = ' + x0 + ': ' + printColumn(middleColumn));
 total += computeColumn(middleColumn);
 let forwardColumn = middleColumn;
 let forwardX = x0;
 while (forwardColumn) {
   forwardX++;
   forwardColumn = getColumn(forwardX, forwardColumn);
-  console.log('x = ' + forwardX + ': ' + printColumn(forwardColumn));
+  allColumns[forwardX] = forwardColumn;
+  //console.log('x = ' + forwardX + ': ' + printColumn(forwardColumn));
   total += computeColumn(forwardColumn);
 }
 let backwardColumn = middleColumn;
@@ -381,8 +385,17 @@ let backwardX = x0;
 while (backwardColumn) {
   backwardX--;
   backwardColumn = getColumn(backwardX, backwardColumn);
-  console.log('x = ' + backwardX + ': ' + printColumn(backwardColumn));
+  allColumns[backwardX] = backwardColumn;
+  //console.log('x = ' + backwardX + ': ' + printColumn(backwardColumn));
   total += computeColumn(backwardColumn);
 }
+
+fs.writeFile('output/p246output.js', 'let data = ' + JSON.stringify(allColumns), function (err) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('File written.');
+  }
+})
 
 console.log(total);
