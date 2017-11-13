@@ -58,6 +58,23 @@ LargeIntegerMatrix.identity = function (n) {
 	return id;
 }
 
+LargeIntegerMatrix.prototype.multiply = function (a) {
+	if (this.cols !== a.rows) {
+		return undefined;
+	}
+	let product = new LargeIntegerMatrix(this.rows, a.cols);
+	for (let r = 0; r < this.rows; r++) {
+		for (let c = 0; c < a.cols; c++) {
+			let p = new LargeInteger(0);
+			for (let i = 0; i < this.cols; i++) {
+				p = p.add(this.getCell(r, i).multiply(a.getCell(i, c)));
+			}
+			product.setCell(p, r, c);
+		}
+	}
+	return product;
+}
+
 LargeIntegerMatrix.prototype.multiplyMod = function (a, m) {
 	if (this.cols !== a.rows) {
 		return undefined;
