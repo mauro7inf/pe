@@ -1,5 +1,4 @@
 let LargeInteger = require('./LargeInteger');
-let LargeIntegerMatrix = require('./LargeIntegerMatrix');
 
 let N = +(process.argv[2]);
 let M = +(process.argv[3]);
@@ -27,12 +26,12 @@ for (let i = 0; i < set.length; i++) {
 
 let d = (new LargeInteger(10)).exponent(D);
 
-let totals = new LargeIntegerMatrix(M, 1);
+let totals = new Array(M);
 for (let i = 1; i < M; i++) {
-    totals.setCell(0, i, 0);
+    totals[i] = new LargeInteger(0);
 }
 let two = new LargeInteger(2);
-totals.setCell(two.exponentMod(counts[0], d), 0, 0);
+totals[0] = two.exponentMod(counts[0], d);
 
 let residues = Object.keys(counts);
 for (let i = 0; i < residues.length; i++) {
@@ -42,14 +41,13 @@ for (let i = 0; i < residues.length; i++) {
     }
     console.log(k);
     let v = counts[k];
-    let matrix = new LargeIntegerMatrix.identity(M);
-    for (let j = 0; j < M; j++) {
-        matrix.setCell(1, j, (j + k) % M);
-    }
     for (let u = 0; u < v; u++) {
-        console.log('\t' + (u + 1) + '/' + v);
-        totals = matrix.multiplyMod(totals, d);
+        let newTotals = new Array(M);
+        for (let w = 0; w < M; w++) {
+            newTotals[(w + k) % M] = totals[w].add(totals[(w + k) % M]).mod(d);
+        }
+        totals = newTotals;
     }
 }
 
-console.log(totals.getCell(0, 0).subtract(1).toString());
+console.log(totals[0].subtract(1).toString());
