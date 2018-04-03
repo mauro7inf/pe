@@ -110,6 +110,21 @@ function factorProduct(a) {
   return factors;
 }
 
+// factor a/b, where b is ideally a factor of a
+function factorQuotient(a, b) {
+    let factors = factor(a);
+    let bFactors = factor(b);
+    let pFactors = primeFactors(b);
+    for (let i = 0; i < pFactors.length; i++) {
+        if (pFactors[i] in factors) {
+            factors[pFactors[i]] -= bFactors[pFactors[i]];
+        } else {
+            factors[pFactors[i]] = -bFactors[pFactors[i]]; // bad
+        }
+    }
+    return factors;
+}
+
 // array of prime factors
 // a can be either a number or an object of factors
 function primeFactors(a) {
@@ -351,8 +366,10 @@ module.exports = {
   getPrimesUpTo: getPrimesUpTo,
   nthPrime: nthPrime,
   factor: factor,
+  multiplyFactors: multiplyFactors,
   isPrime: isPrime,
   factorProduct: factorProduct,
+  factorQuotient: factorQuotient,
   primeFactors: primeFactors,
   factorPairs: factorPairs,
   factorSets: factorSets,
