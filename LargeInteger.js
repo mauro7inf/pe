@@ -369,4 +369,22 @@ LargeInteger.prototype.greaterThanOrEqualTo = function (a) {
   return !(this.lessThan(a));
 };
 
+LargeInteger.gcd = function (a, b) {
+  let zero = new LargeInteger(0);
+  if (a.equals(zero)) {
+    return b;
+  } else if (b.equals(zero)) {
+    return a;
+  }
+  let A = a;
+  let B = b;
+  let r = A.mod(B);
+  while (r.greaterThan(zero)) {
+    A = B;
+    B = r;
+    r = A.mod(B);
+  }
+  return B;
+};
+
 module.exports = LargeInteger;
